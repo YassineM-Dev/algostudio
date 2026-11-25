@@ -337,19 +337,19 @@ function createMainWindow() {
     mainWindow = null;
   });
 
-  // Open local Guide PDF & kiteb.net Bac PDFs in a clean dedicated PDF window; external pages in default browser
+  // Open local Guide PDF & verified Bac Algorithmique PDFs in a clean dedicated PDF window; external pages/ZIPs in default browser
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {
     const isLocalApp = url.startsWith('algostudio://');
-    const isKitebPdf = /^https?:\/\/(www\.)?kiteb\.net\/.+\.pdf$/i.test(url);
+    const isExamPdf = /^https?:\/\/(files\.reviserbac\.tn|(?:www\.)?kiteb\.net)\/.+\.pdf$/i.test(url);
 
-    if (isLocalApp || isKitebPdf) {
+    if (isLocalApp || isExamPdf) {
       return {
         action: 'allow',
         overrideBrowserWindowOptions: {
           width: 1080,
           height: 820,
-          title: isKitebPdf
-            ? 'Sujet Bac Informatique (kiteb.net) — AlgoStudio'
+          title: isExamPdf
+            ? 'Sujet Bac Algorithmique — AlgoStudio'
             : "Guide Complet d'Algorithmique — AlgoStudio",
           backgroundColor: '#0B0B0F',
           icon: fs.existsSync(ICON_PATH) ? ICON_PATH : undefined,

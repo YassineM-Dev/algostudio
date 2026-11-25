@@ -5,7 +5,7 @@ Application bureau Windows (`.exe`) pour les élèves du **Bac Informatique Tuni
 - Éditeur complet (multi-onglets, symboles `← ≠ ≤ ≥ @ À É`, conversion `Auto`, bouton activer/désactiver `Complétion`, **Mode Clair / Mode Sombre**)
 - **12 chapitres** du Guide Complet d'Algorithmique + PDF intégré
 - **27 modules standards** prêts à exécuter
-- **921 sujets Bac officiels** (`kiteb.net`, 2006–2026)
+- **Tous les sujets Bac d'Algorithmique & Programmation (2008–2026)** : Théorique (Principale + Contrôle) & Pratique, Énoncés & Corrigés PDF directs vérifiés
 
 ---
 

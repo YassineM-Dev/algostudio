@@ -351,7 +351,7 @@ export function App() {
     } else {
       setUpdateStatus({
         state: 'up-to-date',
-        version: '1.6.0',
+        version: '1.6.1',
         message: 'Version Web : toujours à jour automatiquement au chargement.',
       });
     }

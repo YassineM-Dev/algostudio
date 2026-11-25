@@ -3,6 +3,7 @@ import { runPseudocode } from '../../engine';
 import { STANDARD_MODULES } from '../standardModules';
 import { CHEAT_SHEETS } from '../cheatSheets';
 import { QUICK_STARTERS } from '../defaultCode';
+import { BAC_EXAMS, BAC_YEAR_ARCHIVES } from '../bacExams';
 
 const SAMPLE_INPUTS_BY_ID: Record<string, string[]> = {
   'remplir-tableau': ['3', '10', '20', '30'],
@@ -79,4 +80,45 @@ describe('All Runnable Cheat Sheet Snippets & Quick Starters Execute Cleanly', (
       expect(outputs.length).toBeGreaterThan(0);
     });
   }
+});
+
+describe('Bac Algorithmique Archive (2008–2026) Completeness & Purity', () => {
+  it('covers every year from 2008 to 2026 with both Théorique and Pratique énoncés', () => {
+    expect(BAC_YEAR_ARCHIVES.length).toBe(19);
+    for (let year = 2008; year <= 2026; year++) {
+      const thPrincipale = BAC_EXAMS.find(
+        (e) =>
+          e.year === year &&
+          e.epreuve === 'Théorique' &&
+          e.session === 'Principale' &&
+          e.kind === 'Énoncé'
+      );
+      expect(thPrincipale, `Missing Théorique Principale énoncé for ${year}`).toBeDefined();
+
+      if (year >= 2009) {
+        const thControle = BAC_EXAMS.find(
+          (e) =>
+            e.year === year &&
+            e.epreuve === 'Théorique' &&
+            e.session === 'Contrôle' &&
+            e.kind === 'Énoncé'
+        );
+        expect(thControle, `Missing Théorique Contrôle énoncé for ${year}`).toBeDefined();
+      }
+
+      const prEnonce = BAC_EXAMS.find(
+        (e) => e.year === year && e.epreuve === 'Pratique' && e.kind === 'Énoncé'
+      );
+      expect(prEnonce, `Missing Pratique énoncé for ${year}`).toBeDefined();
+    }
+  });
+
+  it('contains strictly Algorithmique & Programmation items with direct PDF/ZIP HTTPS links', () => {
+    expect(BAC_EXAMS.length).toBeGreaterThanOrEqual(110);
+    for (const item of BAC_EXAMS) {
+      expect(item.downloadUrl).toMatch(/^https:\/\/.+\.(pdf|zip)$/i);
+      expect(item.downloadUrl).not.toMatch(/\/(sti|tic|bd|eco|lettres|sport)[-_./]/i);
+      expect(item.downloadUrl).toMatch(/algo/i);
+    }
+  });
 });
