@@ -1,7 +1,7 @@
 {
   "name": "algostudio",
   "private": true,
-  "version": "1.5.1",
+  "version": "1.6.0",
   "description": "AlgoStudio — IDE d'Algorithmique & Bac Informatique",
   "author": "AlgoStudio",
   "type": "module",
@@ -57,10 +57,10 @@
       "icon": "build/icon.ico"
     },
     "portable": {
-      "artifactName": "AlgoStudio-Portable-${version}.exe"
+      "artifactName": "AlgoStudio-Portable.exe"
     },
     "nsis": {
-      "artifactName": "AlgoStudio-Setup-${version}.exe",
+      "artifactName": "AlgoStudio-Setup.exe",
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,

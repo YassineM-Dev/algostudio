@@ -351,7 +351,7 @@ export function App() {
     } else {
       setUpdateStatus({
         state: 'up-to-date',
-        version: '1.5.1',
+        version: '1.6.0',
         message: 'Version Web : toujours à jour automatiquement au chargement.',
       });
     }
@@ -360,6 +360,18 @@ export function App() {
   const handleInstallUpdate = useCallback(() => {
     if (window.algoUpdater) {
       void window.algoUpdater.installUpdate();
+    }
+  }, []);
+
+  const handleOpenDownload = useCallback((url?: string) => {
+    if (window.algoUpdater?.openDownload) {
+      void window.algoUpdater.openDownload(url);
+    } else {
+      window.open(
+        url || 'https://github.com/King-Joyboy/algostudio/releases/latest/download/AlgoStudio-Setup.exe',
+        '_blank',
+        'noreferrer'
+      );
     }
   }, []);
 
@@ -396,12 +408,15 @@ export function App() {
         resourcesUnlocked={resourcesUnlocked}
         onLockResources={handleLockResources}
         onCheckUpdates={handleCheckUpdates}
-        hasReadyUpdate={updateStatus.state === 'downloaded'}
+        hasReadyUpdate={
+          updateStatus.state === 'downloaded' || updateStatus.state === 'manual-download'
+        }
       />
 
       <UpdateBanner
         status={updateStatus}
         onInstall={handleInstallUpdate}
+        onOpenDownload={handleOpenDownload}
         onDismiss={() => setUpdateStatus({ state: 'idle' })}
       />
 
