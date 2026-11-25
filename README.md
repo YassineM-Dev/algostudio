@@ -20,14 +20,14 @@ npm run build:exe    # Compiler les exécutables Windows (release/)
 
 AlgoStudio intègre **`electron-updater`** : une fois configuré, **chaque utilisateur ayant installé `AlgoStudio-Setup-*.exe` reçoit automatiquement toutes vos nouvelles versions** au démarrage sans que vous ayez à renvoyer un nouveau `.exe`.
 
-### Configuration (1 seule fois)
-1. Créez un dépôt GitHub public (ex : `github.com/VOTRE_COMPTE/algostudio`).
-2. Dans `package.json`, remplacez `"VOTRE_COMPTE_GITHUB"` par votre vrai nom d'utilisateur GitHub :
+### Configuration (déjà prête pour `King-Joyboy/algostudio`)
+1. Créez le dépôt public `github.com/King-Joyboy/algostudio`.
+2. `package.json` est déjà configuré :
    ```json
    "publish": [
      {
        "provider": "github",
-       "owner": "VOTRE_COMPTE_GITHUB",
+       "owner": "King-Joyboy",
        "repo": "algostudio"
      }
    ]
