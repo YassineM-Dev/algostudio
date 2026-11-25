@@ -1,0 +1,90 @@
+{
+  "name": "algostudio",
+  "private": true,
+  "version": "1.4.0",
+  "description": "AlgoStudio — IDE d'Algorithmique & Bac Informatique",
+  "author": "AlgoStudio",
+  "type": "module",
+  "main": "electron/main.cjs",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "clean": "node -e \"const fs=require('fs'); for(const d of ['dist','release','tsconfig.tsbuildinfo']) try{fs.rmSync(d,{recursive:true,force:true})}catch{}\"",
+    "electron:start": "electron .",
+    "build:exe": "npm run build && electron-builder --win --publish never",
+    "build:clean": "npm run clean && npm run build:exe",
+    "sync:bac": "node scripts/fetch-kiteb-exams.mjs"
+  },
+  "build": {
+    "appId": "com.algostudio.desktop",
+    "productName": "AlgoStudio",
+    "generateUpdatesFilesForAllChannels": true,
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "King-Joyboy",
+        "repo": "algostudio"
+      }
+    ],
+    "directories": {
+      "output": "release",
+      "buildResources": "build"
+    },
+    "files": [
+      "dist/**/*",
+      "electron/**/*",
+      "build/icon.png",
+      "package.json"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "build/icon.ico"
+    },
+    "portable": {
+      "artifactName": "AlgoStudio-Portable-${version}.exe"
+    },
+    "nsis": {
+      "artifactName": "AlgoStudio-Setup-${version}.exe",
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "AlgoStudio"
+    }
+  },
+  "dependencies": {
+    "@monaco-editor/react": "^4.7.0",
+    "electron-updater": "^6.6.2",
+    "lucide-react": "^0.511.0",
+    "monaco-editor": "^0.52.2",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.1.8",
+    "@types/react": "^19.1.2",
+    "@types/react-dom": "^19.1.2",
+    "@vitejs/plugin-react": "^4.5.0",
+    "electron": "^45.5.0",
+    "electron-builder": "^26.18.0",
+    "tailwindcss": "^4.1.8",
+    "typescript": "^5.8.3",
+    "vite": "^6.3.5",
+    "vitest": "^3.1.4"
+  }
+}

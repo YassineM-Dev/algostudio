@@ -1,0 +1,12 @@
+# Dependencies & builds
+node_modules/
+dist/
+release/
+*.tsbuildinfo
+
+# Environment & OS files
+.env
+.env.local
+.DS_Store
+Thumbs.db
+*.log

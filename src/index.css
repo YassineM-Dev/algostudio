@@ -1,0 +1,104 @@
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+:root {
+  --bg-app: #F3F5F9;
+  --bg-sidebar: #FFFFFF;
+  --bg-surface: #FFFFFF;
+  --bg-elevated: #F8FAFC;
+  --bg-subtle: #EEF1F6;
+  --bg-code: #F8FAFC;
+  --border-main: #DFE4EE;
+  --border-soft: #E8ECF4;
+  --text-primary: #0F172A;
+  --text-secondary: #475569;
+  --text-muted: #64748B;
+  --accent: #DC0915;
+  --accent-bright: #E50914;
+  --scrollbar-track: #F1F5F9;
+  --scrollbar-thumb: #CBD5E1;
+  --scrollbar-thumb-hover: #94A3B8;
+}
+
+.dark {
+  --bg-app: #0B0B0F;
+  --bg-sidebar: #111118;
+  --bg-surface: #14141B;
+  --bg-elevated: #1A1A24;
+  --bg-subtle: #101017;
+  --bg-code: #0E0E14;
+  --border-main: #242433;
+  --border-soft: #1E1E2B;
+  --text-primary: #F4F4F8;
+  --text-secondary: #B4B8C8;
+  --text-muted: #7C8196;
+  --accent: #E50914;
+  --accent-bright: #FF2A2A;
+  --scrollbar-track: #0B0B0F;
+  --scrollbar-thumb: #2A2A3B;
+  --scrollbar-thumb-hover: #3E3E54;
+}
+
+@layer base {
+  html,
+  body,
+  #root {
+    height: 100%;
+    background-color: var(--bg-app);
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+  }
+}
+
+/* Custom themed scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 9999px;
+  border: 2px solid var(--scrollbar-track);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+}
+
+/* Monaco error line decoration */
+.algo-error-line {
+  background: rgba(229, 9, 20, 0.14) !important;
+  border-left: 3px solid #E50914 !important;
+}
+
+.algo-error-glyph {
+  background: #E50914;
+  border-radius: 9999px;
+  width: 8px !important;
+  height: 8px !important;
+  margin-top: 6px;
+  margin-left: 4px;
+}
+
+@keyframes pulse-crimson {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(229, 9, 20, 0.45);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(229, 9, 20, 0);
+  }
+}
+
+.animate-pulse-crimson {
+  animation: pulse-crimson 1.8s infinite;
+}
