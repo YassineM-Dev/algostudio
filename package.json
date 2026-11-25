@@ -14,8 +14,7 @@
     "clean": "node -e \"const fs=require('fs'); for(const d of ['dist','release','tsconfig.tsbuildinfo']) try{fs.rmSync(d,{recursive:true,force:true})}catch{}\"",
     "electron:start": "electron .",
     "build:exe": "npm run build && electron-builder --win --publish never",
-    "build:clean": "npm run clean && npm run build:exe",
-    "sync:bac": "node scripts/fetch-kiteb-exams.mjs"
+    "build:clean": "npm run clean && npm run build:exe"
   },
   "build": {
     "appId": "com.algostudio.desktop",
