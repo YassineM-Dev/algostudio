@@ -23,7 +23,7 @@ const ICON_PATH = path.join(__dirname, '..', 'build', 'icon.png');
 const PRELOAD_PATH = path.join(__dirname, 'preload.cjs');
 const PKG_PATH = path.join(__dirname, '..', 'package.json');
 
-const GITHUB_OWNER = 'King-Joyboy';
+const GITHUB_OWNER = 'YassineM-Dev';
 const GITHUB_REPO = 'algostudio';
 const GITHUB_RELEASES_BASE = `https://github.com/${GITHUB_OWNER}/${GITHUB_REPO}/releases`;
 const GITHUB_LATEST_API = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/releases/latest`;

@@ -351,7 +351,7 @@ export function App() {
     } else {
       setUpdateStatus({
         state: 'up-to-date',
-        version: '1.6.1',
+        version: '1.6.2',
         message: 'Version Web : toujours à jour automatiquement au chargement.',
       });
     }
@@ -368,7 +368,7 @@ export function App() {
       void window.algoUpdater.openDownload(url);
     } else {
       window.open(
-        url || 'https://github.com/King-Joyboy/algostudio/releases/latest/download/AlgoStudio-Setup.exe',
+        url || 'https://github.com/YassineM-Dev/algostudio/releases/latest/download/AlgoStudio-Setup.exe',
         '_blank',
         'noreferrer'
       );

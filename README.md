@@ -14,20 +14,20 @@ Application bureau Windows (`.exe`) pour les élèves du **Bac Informatique Tuni
 Cliquez directement sur l'un des boutons ci-dessous pour télécharger la **dernière version** :
 
 <p>
-  <a href="https://github.com/King-Joyboy/algostudio/releases/latest/download/AlgoStudio-Setup.exe">
+  <a href="https://github.com/YassineM-Dev/algostudio/releases/latest/download/AlgoStudio-Setup.exe">
     <img src="https://img.shields.io/badge/T%C3%A9l%C3%A9charger_AlgoStudio-Setup_(.exe)_%E2%80%A2_Auto--Update-E50914?style=for-the-badge&logo=windows&logoColor=white" alt="Télécharger AlgoStudio Setup (.exe)" />
   </a>
   &nbsp;
-  <a href="https://github.com/King-Joyboy/algostudio/releases/latest/download/AlgoStudio-Portable.exe">
+  <a href="https://github.com/YassineM-Dev/algostudio/releases/latest/download/AlgoStudio-Portable.exe">
     <img src="https://img.shields.io/badge/T%C3%A9l%C3%A9charger_AlgoStudio-Portable_(.exe)_%E2%80%A2_Sans_installation-1F2937?style=for-the-badge&logo=windows&logoColor=white" alt="Télécharger AlgoStudio Portable (.exe)" />
   </a>
 </p>
 
 | Version | Lien direct (toujours à jour) | Recommandé pour |
 | :--- | :--- | :--- |
-| **Installateur Windows** *(Recommandé)* | [**AlgoStudio-Setup.exe**](https://github.com/King-Joyboy/algostudio/releases/latest/download/AlgoStudio-Setup.exe) | Installation normale + **Mises à jour automatiques** |
-| **Version Portable** | [**AlgoStudio-Portable.exe**](https://github.com/King-Joyboy/algostudio/releases/latest/download/AlgoStudio-Portable.exe) | Lancer sans installer (clé USB, PC lycée) |
-| **Toutes les versions** | [**GitHub Releases**](https://github.com/King-Joyboy/algostudio/releases/latest) | Historique complet des versions |
+| **Installateur Windows** *(Recommandé)* | [**AlgoStudio-Setup.exe**](https://github.com/YassineM-Dev/algostudio/releases/latest/download/AlgoStudio-Setup.exe) | Installation normale + **Mises à jour automatiques** |
+| **Version Portable** | [**AlgoStudio-Portable.exe**](https://github.com/YassineM-Dev/algostudio/releases/latest/download/AlgoStudio-Portable.exe) | Lancer sans installer (clé USB, PC lycée) |
+| **Toutes les versions** | [**GitHub Releases**](https://github.com/YassineM-Dev/algostudio/releases/latest) | Historique complet des versions |
 
 > **Note Windows SmartScreen :** Si Windows affiche *"Windows a protégé votre ordinateur"* lors de la première ouverture, cliquez sur **Informations complémentaires** → **Exécuter quand même**.
 

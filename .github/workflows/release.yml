@@ -59,8 +59,8 @@ jobs:
           $notes = @(
             "## AlgoStudio $tag — Téléchargement direct (Windows)",
             "",
-            "- **Installateur Windows (Recommandé — Mises à jour automatiques)** : [Télécharger AlgoStudio-Setup.exe](https://github.com/King-Joyboy/algostudio/releases/latest/download/AlgoStudio-Setup.exe)",
-            "- **Version Portable (Sans installation)** : [Télécharger AlgoStudio-Portable.exe](https://github.com/King-Joyboy/algostudio/releases/latest/download/AlgoStudio-Portable.exe)",
+            "- **Installateur Windows (Recommandé — Mises à jour automatiques)** : [Télécharger AlgoStudio-Setup.exe](https://github.com/YassineM-Dev/algostudio/releases/latest/download/AlgoStudio-Setup.exe)",
+            "- **Version Portable (Sans installation)** : [Télécharger AlgoStudio-Portable.exe](https://github.com/YassineM-Dev/algostudio/releases/latest/download/AlgoStudio-Portable.exe)",
             "",
             "> Les utilisateurs ayant déjà installé **AlgoStudio Setup** reçoivent cette mise à jour automatiquement au démarrage (ou via **Fichier → Mises à jour**)."
           ) -join "`n"

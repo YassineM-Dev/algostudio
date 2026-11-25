@@ -1,7 +1,7 @@
 {
   "name": "algostudio",
   "private": true,
-  "version": "1.6.1",
+  "version": "1.6.2",
   "description": "AlgoStudio — IDE d'Algorithmique & Bac Informatique",
   "author": "AlgoStudio",
   "type": "module",
@@ -23,7 +23,7 @@
     "publish": [
       {
         "provider": "github",
-        "owner": "King-Joyboy",
+        "owner": "YassineM-Dev",
         "repo": "algostudio",
         "releaseType": "release"
       }
