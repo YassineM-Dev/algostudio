@@ -351,7 +351,7 @@ export function App() {
     } else {
       setUpdateStatus({
         state: 'up-to-date',
-        version: '1.6.2',
+        version: '1.6.3',
         message: 'Version Web : toujours à jour automatiquement au chargement.',
       });
     }
@@ -480,6 +480,18 @@ export function App() {
             <LockGate sectionName="Sujets Bac" onUnlock={handleUnlockResources} />
           ))}
       </main>
+
+      <footer className="h-5 px-3 bg-[var(--bg-sidebar)] border-t border-[var(--border-soft)] flex items-center justify-between text-[10px] text-[var(--text-muted)] shrink-0 select-none">
+        <span className="font-mono opacity-80">AlgoStudio v1.6.3</span>
+        <a
+          href="https://github.com/YassineM-Dev/algostudio"
+          target="_blank"
+          rel="noreferrer"
+          className="hover:text-[var(--text-secondary)] transition-colors"
+        >
+          &copy; 2026 Developed by Yassine
+        </a>
+      </footer>
     </div>
   );
 }

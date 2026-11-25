@@ -1,9 +1,9 @@
 {
   "name": "algostudio",
   "private": true,
-  "version": "1.6.2",
+  "version": "1.6.3",
   "description": "AlgoStudio — IDE d'Algorithmique & Bac Informatique",
-  "author": "AlgoStudio",
+  "author": "Yassine",
   "type": "module",
   "main": "electron/main.cjs",
   "scripts": {
@@ -19,6 +19,7 @@
   "build": {
     "appId": "com.algostudio.desktop",
     "productName": "AlgoStudio",
+    "copyright": "Copyright © 2026 Developed by Yassine",
     "generateUpdatesFilesForAllChannels": true,
     "publish": [
       {

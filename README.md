@@ -63,3 +63,7 @@ npm run build:exe    # Compiler les exécutables Windows localement (release/)
    git push origin main --tags
    ```
 3. **GitHub Actions** (`.github/workflows/release.yml`) lance automatiquement les tests, compile `AlgoStudio-Setup.exe`, `AlgoStudio-Portable.exe`, `.blockmap` et `latest.yml`, puis publie une release publique unique. Les boutons de téléchargement ci-dessus et l'auto-update pointent instantanément vers la nouvelle version.
+
+---
+
+<sub>© 2026 Developed by <a href="https://github.com/YassineM-Dev">Yassine</a></sub>
