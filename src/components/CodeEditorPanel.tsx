@@ -9,6 +9,7 @@ import {
   Zap,
   Plus,
   FileCode2,
+  Wand2,
 } from 'lucide-react';
 import {
   ALGO_DARK_THEME_ID,
@@ -120,9 +121,25 @@ export const CodeEditorPanel: React.FC<CodeEditorPanelProps> = ({
 
   const [cursorPos, setCursorPos] = useState({ line: 1, col: 1 });
   const [autoSymbols, setAutoSymbols] = useState(true);
+  const [autoComplete, setAutoComplete] = useState<boolean>(() => {
+    try {
+      const saved = localStorage.getItem('algostudio_autocomplete_v1');
+      return saved === null ? true : saved === 'true';
+    } catch {
+      return true;
+    }
+  });
   const [showShortcuts, setShowShortcuts] = useState(false);
   const [renamingId, setRenamingId] = useState<string | null>(null);
   const [renameValue, setRenameValue] = useState('');
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('algostudio_autocomplete_v1', String(autoComplete));
+    } catch {
+      // ignore
+    }
+  }, [autoComplete]);
 
   autoReplaceRef.current = autoSymbols;
   registerAlgoLanguage();
@@ -377,6 +394,25 @@ export const CodeEditorPanel: React.FC<CodeEditorPanelProps> = ({
 
           <button
             type="button"
+            onClick={() => setAutoComplete((v) => !v)}
+            title={
+              autoComplete
+                ? 'Auto-complétion activée (cliquer pour désactiver)'
+                : 'Auto-complétion désactivée (cliquer pour activer)'
+            }
+            aria-pressed={autoComplete}
+            className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] font-semibold border transition-colors cursor-pointer ${
+              autoComplete
+                ? 'bg-emerald-500/12 border-emerald-500/35 text-emerald-700 dark:text-emerald-400'
+                : 'bg-[var(--bg-elevated)] border-[var(--border-main)] text-[var(--text-muted)]'
+            }`}
+          >
+            <Wand2 className="w-3 h-3" />
+            <span className="hidden sm:inline">Complétion</span>
+          </button>
+
+          <button
+            type="button"
             onClick={() => setShowShortcuts((s) => !s)}
             title="Raccourcis clavier"
             className={`p-1 rounded border transition-colors cursor-pointer ${
@@ -452,6 +488,11 @@ export const CodeEditorPanel: React.FC<CodeEditorPanelProps> = ({
             cursorBlinking: 'smooth',
             renderLineHighlight: 'all',
             bracketPairColorization: { enabled: true },
+            quickSuggestions: autoComplete,
+            suggestOnTriggerCharacters: autoComplete,
+            wordBasedSuggestions: autoComplete ? 'currentDocument' : 'off',
+            snippetSuggestions: autoComplete ? 'inline' : 'none',
+            parameterHints: { enabled: autoComplete },
           }}
         />
       </div>
