@@ -49,10 +49,20 @@
   body,
   #root {
     height: 100%;
+    height: 100dvh;
     background-color: var(--bg-app);
     color: var(--text-primary);
     font-family: var(--font-sans);
+    overscroll-behavior: none;
   }
+}
+
+.safe-top {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 /* Custom themed scrollbars */

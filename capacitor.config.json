@@ -1,0 +1,14 @@
+{
+  "appId": "com.algostudio.app",
+  "appName": "AlgoStudio",
+  "webDir": "dist",
+  "server": {
+    "androidScheme": "https",
+    "iosScheme": "capacitor"
+  },
+  "plugins": {
+    "Camera": {
+      "presentationStyle": "fullscreen"
+    }
+  }
+}

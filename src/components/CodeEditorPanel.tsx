@@ -371,10 +371,10 @@ export const CodeEditorPanel: React.FC<CodeEditorPanelProps> = ({
             type="button"
             onClick={onOpenPhotoImport}
             className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[var(--bg-elevated)] hover:bg-[var(--bg-subtle)] border border-[var(--border-main)] hover:border-[#E50914]/50 text-xs font-medium text-[var(--text-primary)] transition-colors cursor-pointer"
-            title="Importer le code depuis une photo (Ctrl+Shift+I)"
+            title="Importer le code depuis la caméra ou une photo (Ctrl+Shift+I)"
           >
             <Camera className="w-3.5 h-3.5 text-[#E50914]" />
-            <span className="hidden sm:inline">Photo → Code</span>
+            <span>Photo</span>
           </button>
         </div>
 

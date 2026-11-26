@@ -1,4 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { Capacitor } from '@capacitor/core';
+import { Camera as NativeCamera, CameraResultType, CameraSource } from '@capacitor/camera';
 import {
   Camera,
   Upload,
@@ -15,6 +17,7 @@ import {
   ChevronDown,
   ChevronUp,
   ClipboardPaste,
+  Image as ImageIcon,
 } from 'lucide-react';
 import {
   extractAlgoOfflineOcr,
@@ -26,6 +29,12 @@ import { extractAlgoFilenameFromCode } from '../utils/ocrAlgoCleaner';
 import { formatPseudocode } from '../engine';
 
 const GEMINI_KEY_STORAGE = 'algostudio_gemini_key_v1';
+
+async function dataUrlToFile(dataUrl: string, filename: string): Promise<File> {
+  const res = await fetch(dataUrl);
+  const blob = await res.blob();
+  return new File([blob], filename, { type: blob.type || 'image/jpeg' });
+}
 
 interface PhotoToCodeModalProps {
   isOpen: boolean;
@@ -41,6 +50,7 @@ export const PhotoToCodeModal: React.FC<PhotoToCodeModalProps> = ({
   onOpenNewTab,
 }) => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const cameraInputRef = useRef<HTMLInputElement | null>(null);
 
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -73,18 +83,76 @@ export const PhotoToCodeModal: React.FC<PhotoToCodeModalProps> = ({
     }
   }, [geminiKey]);
 
-  const selectImage = useCallback((file: File) => {
+  const selectImage = useCallback((file: File, fromCamera = false) => {
     if (!file.type.startsWith('image/')) {
       setError('Veuillez choisir un fichier image valide (PNG, JPG, WEBP, BMP).');
       return;
     }
     setError(null);
     setImageFile(file);
+    if (fromCamera) {
+      setPreprocessMode('photo');
+    }
     setPreviewUrl((prev) => {
       if (prev) URL.revokeObjectURL(prev);
       return URL.createObjectURL(file);
     });
   }, []);
+
+  // Native Android/iOS camera capture via @capacitor/camera (with HTML5 capture="environment" fallback)
+  const handleTakeCameraPhoto = useCallback(async () => {
+    setError(null);
+    if (Capacitor.isNativePlatform()) {
+      try {
+        const photo = await NativeCamera.getPhoto({
+          source: CameraSource.Camera,
+          resultType: CameraResultType.DataUrl,
+          quality: 92,
+          allowEditing: true,
+          correctOrientation: true,
+          saveToGallery: false,
+        });
+        if (photo.dataUrl) {
+          const ext = photo.format || 'jpeg';
+          const file = await dataUrlToFile(photo.dataUrl, `camera_algo.${ext}`);
+          selectImage(file, true);
+        }
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err || '');
+        if (!/cancel/i.test(msg)) {
+          setError("Impossible d'accéder à la caméra. Vérifiez les permissions de l'application.");
+        }
+      }
+    } else {
+      cameraInputRef.current?.click();
+    }
+  }, [selectImage]);
+
+  const handlePickFromGallery = useCallback(async () => {
+    setError(null);
+    if (Capacitor.isNativePlatform()) {
+      try {
+        const photo = await NativeCamera.getPhoto({
+          source: CameraSource.Photos,
+          resultType: CameraResultType.DataUrl,
+          quality: 92,
+          correctOrientation: true,
+        });
+        if (photo.dataUrl) {
+          const ext = photo.format || 'jpeg';
+          const file = await dataUrlToFile(photo.dataUrl, `galerie_algo.${ext}`);
+          selectImage(file, false);
+        }
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err || '');
+        if (!/cancel/i.test(msg)) {
+          fileInputRef.current?.click();
+        }
+      }
+    } else {
+      fileInputRef.current?.click();
+    }
+  }, [selectImage]);
 
   // Cleanup preview object URL on unmount
   useEffect(() => {
@@ -113,7 +181,7 @@ export const PhotoToCodeModal: React.FC<PhotoToCodeModalProps> = ({
             e.preventDefault();
             const ext = blob.type.split('/')[1] || 'png';
             const pastedFile = new File([blob], `capture.${ext}`, { type: blob.type });
-            selectImage(pastedFile);
+            selectImage(pastedFile, false);
             break;
           }
         }
@@ -132,11 +200,13 @@ export const PhotoToCodeModal: React.FC<PhotoToCodeModalProps> = ({
 
   const handleExtract = async () => {
     if (!imageFile) {
-      setError("Veuillez d'abord importer ou coller une photo d'algorithme.");
+      setError("Veuillez d'abord prendre une photo ou importer une image d'algorithme.");
       return;
     }
     if (useGemini && !geminiKey.trim()) {
-      setError('Entrez votre clé API Gemini (ou décochez le mode IA Vision pour utiliser l’OCR hors-ligne gratuit).');
+      setError(
+        'Entrez votre clé API Gemini (ou décochez le mode IA Vision pour utiliser l’OCR hors-ligne gratuit).'
+      );
       return;
     }
 
@@ -169,7 +239,7 @@ export const PhotoToCodeModal: React.FC<PhotoToCodeModalProps> = ({
     e.preventDefault();
     setIsDragging(false);
     const file = e.dataTransfer.files?.[0];
-    if (file) selectImage(file);
+    if (file) selectImage(file, false);
   };
 
   const handleReplace = () => {
@@ -189,24 +259,24 @@ export const PhotoToCodeModal: React.FC<PhotoToCodeModalProps> = ({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-[2px] p-3"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-[2px] p-2 sm:p-3"
       onMouseDown={(e) => {
         if (e.target === e.currentTarget && !isProcessing) onClose();
       }}
     >
-      <div className="w-full max-w-4xl max-h-[90vh] flex flex-col rounded-xl bg-[var(--bg-surface)] border border-[var(--border-main)] shadow-2xl overflow-hidden">
+      <div className="w-full max-w-4xl max-h-[92dvh] flex flex-col rounded-xl bg-[var(--bg-surface)] border border-[var(--border-main)] shadow-2xl overflow-hidden">
         {/* Header */}
         <div className="px-4 py-2.5 bg-[var(--bg-elevated)] border-b border-[var(--border-main)] flex items-center justify-between gap-2 shrink-0">
-          <div className="flex items-center gap-2">
-            <span className="w-6 h-6 rounded-md bg-[#E50914]/15 border border-[#E50914]/30 flex items-center justify-center">
+          <div className="flex items-center gap-2 min-w-0">
+            <span className="w-6 h-6 rounded-md bg-[#E50914]/15 border border-[#E50914]/30 flex items-center justify-center shrink-0">
               <Camera className="w-3.5 h-3.5 text-[#E50914]" />
             </span>
-            <div>
-              <h2 className="text-xs font-bold text-[var(--text-primary)]">
-                Importer un algorithme depuis une photo (OCR)
+            <div className="min-w-0">
+              <h2 className="text-xs font-bold text-[var(--text-primary)] truncate">
+                Photo → Code (Caméra &amp; OCR hors-ligne)
               </h2>
-              <p className="text-[11px] text-[var(--text-muted)]">
-                100 % hors-ligne · Glissez une image, choisissez un fichier ou collez avec Ctrl+V
+              <p className="text-[11px] text-[var(--text-muted)] truncate">
+                Prenez en photo votre cahier, choisissez une image ou collez (Ctrl+V)
               </p>
             </div>
           </div>
@@ -215,28 +285,64 @@ export const PhotoToCodeModal: React.FC<PhotoToCodeModalProps> = ({
             type="button"
             onClick={onClose}
             disabled={isProcessing}
-            className="p-1 rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-subtle)] disabled:opacity-40 cursor-pointer"
+            className="p-1 rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-subtle)] disabled:opacity-40 cursor-pointer shrink-0"
             aria-label="Fermer"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
-        {/* Body: 2 Columns */}
+        {/* Body: 2 Columns on desktop, stacked scrollable on phone */}
         <div className="flex-1 min-h-0 grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-[var(--border-main)] overflow-y-auto">
-          {/* Left: Photo Upload + Preprocessing Controls */}
-          <div className="p-4 flex flex-col gap-3">
+          {/* Left: Camera + Photo Upload + Preprocessing Controls */}
+          <div className="p-3.5 sm:p-4 flex flex-col gap-3">
+            {/* Hidden inputs for gallery & mobile web rear camera */}
             <input
               ref={fileInputRef}
               type="file"
               accept="image/*"
               onChange={(e) => {
                 const file = e.target.files?.[0];
-                if (file) selectImage(file);
+                if (file) selectImage(file, false);
                 e.target.value = '';
               }}
               className="hidden"
             />
+            <input
+              ref={cameraInputRef}
+              type="file"
+              accept="image/*"
+              capture="environment"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) selectImage(file, true);
+                e.target.value = '';
+              }}
+              className="hidden"
+            />
+
+            {/* Quick Camera & Gallery Buttons (works natively on Android, iOS & Web) */}
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={() => void handleTakeCameraPhoto()}
+                disabled={isProcessing}
+                className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-[#E50914]/12 hover:bg-[#E50914]/20 border border-[#E50914]/40 text-[#DC0915] dark:text-[#FF4D57] text-xs font-semibold transition-colors cursor-pointer"
+              >
+                <Camera className="w-4 h-4" />
+                <span>Caméra</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => void handlePickFromGallery()}
+                disabled={isProcessing}
+                className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-[var(--bg-elevated)] hover:bg-[var(--bg-subtle)] border border-[var(--border-main)] text-[var(--text-primary)] text-xs font-semibold transition-colors cursor-pointer"
+              >
+                <ImageIcon className="w-4 h-4 text-[var(--text-muted)]" />
+                <span>Galerie / Fichier</span>
+              </button>
+            </div>
 
             {!previewUrl ? (
               <div
@@ -246,23 +352,23 @@ export const PhotoToCodeModal: React.FC<PhotoToCodeModalProps> = ({
                 }}
                 onDragLeave={() => setIsDragging(false)}
                 onDrop={handleDrop}
-                onClick={() => fileInputRef.current?.click()}
-                className={`flex-1 min-h-[220px] rounded-lg border-2 border-dashed flex flex-col items-center justify-center gap-2.5 p-5 text-center cursor-pointer transition-colors ${
+                onClick={() => void handlePickFromGallery()}
+                className={`flex-1 min-h-[160px] rounded-lg border-2 border-dashed flex flex-col items-center justify-center gap-2 p-4 text-center cursor-pointer transition-colors ${
                   isDragging
                     ? 'border-[#E50914] bg-[#E50914]/8'
                     : 'border-[var(--border-main)] bg-[var(--bg-elevated)] hover:border-[#E50914]/60'
                 }`}
               >
-                <div className="w-11 h-11 rounded-full bg-[#E50914]/12 flex items-center justify-center">
+                <div className="w-10 h-10 rounded-full bg-[#E50914]/12 flex items-center justify-center">
                   <Upload className="w-5 h-5 text-[#E50914]" />
                 </div>
                 <div className="space-y-1">
                   <p className="text-xs font-semibold text-[var(--text-primary)]">
-                    Cliquez pour choisir une photo ou glissez-la ici
+                    Glissez une photo ici ou utilisez Caméra / Galerie
                   </p>
-                  <p className="text-[11px] text-[var(--text-muted)] flex items-center justify-center gap-1">
+                  <p className="text-[11px] text-[var(--text-muted)] hidden sm:flex items-center justify-center gap-1">
                     <ClipboardPaste className="w-3 h-3" />
-                    <span>Astuce : collez directement une capture avec Ctrl+V</span>
+                    <span>Collez aussi directement une capture avec Ctrl+V</span>
                   </p>
                 </div>
                 <span className="text-[10px] font-mono text-[var(--text-muted)]">
@@ -270,8 +376,8 @@ export const PhotoToCodeModal: React.FC<PhotoToCodeModalProps> = ({
                 </span>
               </div>
             ) : (
-              <div className="flex flex-col gap-2">
-                <div className="relative rounded-lg border border-[var(--border-main)] bg-[var(--bg-code)] overflow-hidden flex items-center justify-center h-56">
+              <div className="flex flex-col gap-1.5">
+                <div className="relative rounded-lg border border-[var(--border-main)] bg-[var(--bg-code)] overflow-hidden flex items-center justify-center h-48 sm:h-52">
                   <img
                     src={previewUrl}
                     alt="Aperçu de la photo"
@@ -283,14 +389,6 @@ export const PhotoToCodeModal: React.FC<PhotoToCodeModalProps> = ({
                     {imageFile?.name} (
                     {imageFile ? Math.max(1, Math.round(imageFile.size / 1024)) : 0} Ko)
                   </span>
-                  <button
-                    type="button"
-                    onClick={() => fileInputRef.current?.click()}
-                    disabled={isProcessing}
-                    className="px-2 py-0.5 rounded bg-[var(--bg-elevated)] hover:bg-[var(--bg-subtle)] border border-[var(--border-main)] text-[var(--text-primary)] font-medium cursor-pointer shrink-0"
-                  >
-                    Changer d&apos;image
-                  </button>
                 </div>
               </div>
             )}
@@ -416,7 +514,7 @@ export const PhotoToCodeModal: React.FC<PhotoToCodeModalProps> = ({
           </div>
 
           {/* Right: Editable Extracted Pseudocode Preview */}
-          <div className="p-4 flex flex-col gap-2.5 min-h-[300px]">
+          <div className="p-3.5 sm:p-4 flex flex-col gap-2.5 min-h-[260px]">
             <div className="flex items-center justify-between gap-2">
               <span className="flex items-center gap-1.5 text-xs font-semibold text-[var(--text-primary)]">
                 <FileCode2 className="w-3.5 h-3.5 text-[#E50914]" />
@@ -451,10 +549,10 @@ export const PhotoToCodeModal: React.FC<PhotoToCodeModalProps> = ({
               onChange={(e) => setExtractedCode(e.target.value)}
               placeholder={`Le pseudocode extrait de la photo apparaîtra ici...\n\nVous pourrez corriger une lettre si besoin avant de l'insérer dans l'éditeur.`}
               spellCheck={false}
-              className="flex-1 min-h-[240px] w-full p-3 rounded-lg bg-[var(--bg-code)] border border-[var(--border-main)] focus:border-[#E50914] font-mono text-xs leading-relaxed text-[var(--text-primary)] placeholder-[var(--text-muted)] resize-none focus:outline-none"
+              className="flex-1 min-h-[200px] sm:min-h-[240px] w-full p-3 rounded-lg bg-[var(--bg-code)] border border-[var(--border-main)] focus:border-[#E50914] font-mono text-xs leading-relaxed text-[var(--text-primary)] placeholder-[var(--text-muted)] resize-none focus:outline-none"
             />
 
-            <div className="flex items-center justify-between gap-2 pt-1">
+            <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
               <span className="text-[10px] font-mono text-[var(--text-muted)]">
                 {lineCount > 0 ? `${lineCount} ligne${lineCount > 1 ? 's' : ''}` : 'En attente'}
               </span>
@@ -467,7 +565,7 @@ export const PhotoToCodeModal: React.FC<PhotoToCodeModalProps> = ({
                   className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md bg-[var(--bg-elevated)] hover:bg-[var(--bg-subtle)] border border-[var(--border-main)] text-xs font-medium text-[var(--text-primary)] disabled:opacity-40 cursor-pointer"
                 >
                   <Replace className="w-3.5 h-3.5" />
-                  <span>Remplacer l&apos;onglet</span>
+                  <span>Remplacer</span>
                 </button>
 
                 <button

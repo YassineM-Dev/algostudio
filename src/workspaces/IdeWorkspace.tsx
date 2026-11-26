@@ -60,7 +60,7 @@ export const IdeWorkspace: React.FC<IdeWorkspaceProps> = ({
 
   return (
     <div
-      className={`h-full grid gap-2.5 min-h-0 ${
+      className={`h-full grid gap-2.5 min-h-0 overflow-y-auto lg:overflow-hidden ${
         splitOrientation === 'horizontal'
           ? 'grid-cols-1 lg:grid-cols-[minmax(0,1.65fr)_minmax(320px,1fr)]'
           : 'grid-cols-1 grid-rows-[minmax(0,1.45fr)_minmax(220px,1fr)]'

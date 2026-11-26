@@ -92,7 +92,7 @@ export const TopBar: React.FC<TopBarProps> = ({
   }, []);
 
   return (
-    <header className="h-11 px-3 bg-[var(--bg-sidebar)] border-b border-[var(--border-main)] flex items-center justify-between gap-2 shrink-0 select-none">
+    <header className="min-h-11 py-1 px-2.5 sm:px-3 bg-[var(--bg-sidebar)] border-b border-[var(--border-main)] flex items-center justify-between gap-2 shrink-0 select-none safe-top">
       {/* Left: Small Logo + Fichier & Run Menus + Workspace Tabs */}
       <div className="flex items-center gap-2 min-w-0">
         <button

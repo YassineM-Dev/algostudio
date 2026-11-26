@@ -356,8 +356,8 @@ export function App() {
     } else {
       setUpdateStatus({
         state: 'up-to-date',
-        version: '1.7.0',
-        message: 'Version Web : toujours à jour automatiquement au chargement.',
+        version: '1.8.0',
+        message: 'AlgoStudio v1.8.0 — vérifiez les nouvelles versions sur GitHub Releases.',
       });
     }
   }, []);
@@ -394,7 +394,7 @@ export function App() {
   }, []);
 
   return (
-    <div className="flex flex-col h-screen w-screen overflow-hidden bg-[var(--bg-app)] text-[var(--text-primary)]">
+    <div className="flex flex-col h-[100dvh] w-screen overflow-hidden bg-[var(--bg-app)] text-[var(--text-primary)]">
       <TopBar
         activeWorkspace={activeWorkspace}
         onSelectWorkspace={setActiveWorkspace}
@@ -488,8 +488,8 @@ export function App() {
           ))}
       </main>
 
-      <footer className="h-5 px-3 bg-[var(--bg-sidebar)] border-t border-[var(--border-soft)] flex items-center justify-between text-[10px] text-[var(--text-muted)] shrink-0 select-none">
-        <span className="font-mono opacity-80">AlgoStudio v1.7.0</span>
+      <footer className="min-h-5 py-0.5 px-3 bg-[var(--bg-sidebar)] border-t border-[var(--border-soft)] flex items-center justify-between text-[10px] text-[var(--text-muted)] shrink-0 select-none safe-bottom">
+        <span className="font-mono opacity-80">AlgoStudio v1.8.0</span>
         <a
           href="https://github.com/YassineM-Dev/algostudio"
           target="_blank"

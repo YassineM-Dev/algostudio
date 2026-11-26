@@ -1,4 +1,4 @@
-name: Build & Publish AlgoStudio Auto-Update
+name: Build & Publish AlgoStudio (Windows, Android, iOS)
 
 on:
   push:
@@ -9,7 +9,8 @@ permissions:
   contents: write
 
 jobs:
-  release-windows:
+  build-windows:
+    name: Build Windows (.exe + Auto-Update)
     runs-on: windows-latest
     steps:
       - name: Checkout repository
@@ -32,53 +33,189 @@ jobs:
           CSC_IDENTITY_AUTO_DISCOVERY: false
         run: npm run build && npx electron-builder --win --publish never
 
-      - name: Verify update artifacts & publish single GitHub Release
+      - name: Verify Windows artifacts
         shell: pwsh
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          $tag = $env:GITHUB_REF_NAME
           $assets = @(
             "release/AlgoStudio-Setup.exe",
             "release/AlgoStudio-Setup.exe.blockmap",
             "release/AlgoStudio-Portable.exe",
             "release/latest.yml"
           )
-
           foreach ($asset in $assets) {
             if (!(Test-Path $asset)) {
-              Write-Error "Artefact manquant dans release/: $asset"
-              Get-ChildItem release/ | Format-Table Name, Length
+              Write-Error "Artefact Windows manquant: $asset"
               exit 1
             }
           }
-
-          Write-Host "=== Contenu de release/latest.yml ==="
           Get-Content "release/latest.yml"
 
-          $notes = @(
-            "## AlgoStudio $tag — Téléchargement direct (Windows)",
-            "",
-            "- **Installateur Windows (Recommandé — Mises à jour automatiques)** : [Télécharger AlgoStudio-Setup.exe](https://github.com/YassineM-Dev/algostudio/releases/latest/download/AlgoStudio-Setup.exe)",
-            "- **Version Portable (Sans installation)** : [Télécharger AlgoStudio-Portable.exe](https://github.com/YassineM-Dev/algostudio/releases/latest/download/AlgoStudio-Portable.exe)",
-            "",
-            "> Les utilisateurs ayant déjà installé **AlgoStudio Setup** reçoivent cette mise à jour automatiquement au démarrage (ou via **Fichier → Mises à jour**)."
-          ) -join "`n"
-          Set-Content -Path "release_notes.md" -Value $notes -Encoding UTF8
+      - name: Upload Windows artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-release
+          path: |
+            release/AlgoStudio-Setup.exe
+            release/AlgoStudio-Setup.exe.blockmap
+            release/AlgoStudio-Portable.exe
+            release/latest.yml
 
-          # Remove any pre-existing release with the same tag to guarantee a single clean release (no duplicate race condition)
-          $ErrorActionPreference = 'Continue'
-          gh release view $tag 2>$null | Out-Null
-          if ($LASTEXITCODE -eq 0) {
-            gh release delete $tag --yes
-          }
-          $ErrorActionPreference = 'Stop'
+  build-android:
+    name: Build Android (.apk with Camera)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-          gh release create $tag `
-            "release/AlgoStudio-Setup.exe" `
-            "release/AlgoStudio-Setup.exe.blockmap" `
-            "release/AlgoStudio-Portable.exe" `
-            "release/latest.yml" `
-            --title "AlgoStudio $tag" `
-            --notes-file "release_notes.md" `
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Setup Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Install dependencies & sync Capacitor Android
+        run: |
+          npm ci
+          npm run build
+          npx cap sync android
+
+      - name: Build & sign Android Release APK
+        run: |
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleRelease
+          UNSIGNED_APK="app/build/outputs/apk/release/app-release-unsigned.apk"
+          if [ ! -f "$UNSIGNED_APK" ]; then
+            echo "Unsigned APK introuvable!"
+            ls -la app/build/outputs/apk/release/
+            exit 1
+          fi
+          BUILD_TOOLS=$(ls -d "$ANDROID_HOME/build-tools/"* | sort -V | tail -n 1)
+          echo "Using build-tools: $BUILD_TOOLS"
+          keytool -genkey -v -keystore release-key.jks -keyalg RSA -keysize 2048 -validity 10000 \
+            -alias algostudio -storepass algostudio2026 -keypass algostudio2026 \
+            -dname "CN=Yassine, OU=AlgoStudio, O=AlgoStudio, L=Tunis, C=TN"
+          "$BUILD_TOOLS/zipalign" -v -p 4 "$UNSIGNED_APK" app-aligned.apk
+          "$BUILD_TOOLS/apksigner" sign --ks release-key.jks --ks-key-alias algostudio \
+            --ks-pass pass:algostudio2026 --key-pass pass:algostudio2026 \
+            --out ../AlgoStudio-Android.apk app-aligned.apk
+          "$BUILD_TOOLS/apksigner" verify ../AlgoStudio-Android.apk
+          ls -lh ../AlgoStudio-Android.apk
+
+      - name: Upload Android APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-release
+          path: AlgoStudio-Android.apk
+
+  build-ios:
+    name: Build iOS (.ipa with Camera)
+    runs-on: macos-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies & sync Capacitor iOS
+        run: |
+          npm ci
+          npm run build
+          npx cap sync ios
+
+      - name: Build unsigned iOS .app & package .ipa
+        run: |
+          xcodebuild \
+            -project ios/App/App.xcodeproj \
+            -scheme App \
+            -configuration Release \
+            -sdk iphoneos \
+            -derivedDataPath ios_derived \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            build
+          APP_PATH="ios_derived/Build/Products/Release-iphoneos/App.app"
+          if [ ! -d "$APP_PATH" ]; then
+            echo "App.app introuvable!"
+            find ios_derived -maxdepth 4
+            exit 1
+          fi
+          mkdir -p Payload
+          cp -R "$APP_PATH" Payload/AlgoStudio.app
+          zip -qry AlgoStudio-iOS.ipa Payload
+          ls -lh AlgoStudio-iOS.ipa
+
+      - name: Upload iOS IPA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-release
+          path: AlgoStudio-iOS.ipa
+
+  publish-release:
+    name: Publish Single Multi-Platform GitHub Release
+    needs: [build-windows, build-android, build-ios]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all platform artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: release-bundle
+          merge-multiple: true
+
+      - name: Verify all 6 artifacts & publish single GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          TAG="${GITHUB_REF_NAME}"
+          for f in \
+            "release-bundle/AlgoStudio-Setup.exe" \
+            "release-bundle/AlgoStudio-Setup.exe.blockmap" \
+            "release-bundle/AlgoStudio-Portable.exe" \
+            "release-bundle/latest.yml" \
+            "release-bundle/AlgoStudio-Android.apk" \
+            "release-bundle/AlgoStudio-iOS.ipa"; do
+            if [ ! -f "$f" ]; then
+              echo "Artefact manquant: $f"
+              ls -la release-bundle/
+              exit 1
+            fi
+          done
+
+          cat <<EOF > release_notes.md
+          ## AlgoStudio ${TAG} — Téléchargement direct (Windows · Android · iOS)
+
+          - **Windows — Installateur (Recommandé — Auto-Update)** : [AlgoStudio-Setup.exe](https://github.com/YassineM-Dev/algostudio/releases/latest/download/AlgoStudio-Setup.exe)
+          - **Windows — Version Portable** : [AlgoStudio-Portable.exe](https://github.com/YassineM-Dev/algostudio/releases/latest/download/AlgoStudio-Portable.exe)
+          - **Android (Caméra + OCR hors-ligne)** : [AlgoStudio-Android.apk](https://github.com/YassineM-Dev/algostudio/releases/latest/download/AlgoStudio-Android.apk)
+          - **iOS (Caméra + OCR hors-ligne)** : [AlgoStudio-iOS.ipa](https://github.com/YassineM-Dev/algostudio/releases/latest/download/AlgoStudio-iOS.ipa) *(installation via AltStore, SideStore, Sideloadly ou TrollStore)*
+
+          > Les utilisateurs Windows ayant installé **AlgoStudio Setup** reçoivent automatiquement cette mise à jour au démarrage (ou via **Fichier → Mises à jour**).
+          EOF
+
+          if gh release view "$TAG" --repo "${GITHUB_REPOSITORY}" >/dev/null 2>&1; then
+            gh release delete "$TAG" --repo "${GITHUB_REPOSITORY}" --yes
+          fi
+
+          gh release create "$TAG" \
+            --repo "${GITHUB_REPOSITORY}" \
+            "release-bundle/AlgoStudio-Setup.exe" \
+            "release-bundle/AlgoStudio-Setup.exe.blockmap" \
+            "release-bundle/AlgoStudio-Portable.exe" \
+            "release-bundle/latest.yml" \
+            "release-bundle/AlgoStudio-Android.apk" \
+            "release-bundle/AlgoStudio-iOS.ipa" \
+            --title "AlgoStudio ${TAG}" \
+            --notes-file release_notes.md \
             --latest
