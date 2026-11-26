@@ -6,6 +6,7 @@ import { ModulesWorkspace } from './workspaces/ModulesWorkspace';
 import { SujetsBacWorkspace } from './workspaces/SujetsBacWorkspace';
 import { LockGate } from './components/LockGate';
 import { UpdateBanner } from './components/UpdateBanner';
+import { PhotoToCodeModal } from './components/PhotoToCodeModal';
 import type { AlgoUpdateStatus } from './vite-env';
 import type { AlgoFileTab } from './components/CodeEditorPanel';
 import type { ConsoleEntry, PendingInputRequest } from './components/ConsoleDebuggerPanel';
@@ -48,6 +49,7 @@ export function App() {
   const [activeWorkspace, setActiveWorkspace] = useState<WorkspaceId>('ide');
   const [resourcesUnlocked, setResourcesUnlocked] = useState(false);
   const [updateStatus, setUpdateStatus] = useState<AlgoUpdateStatus>({ state: 'idle' });
+  const [showPhotoModal, setShowPhotoModal] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const [theme, setTheme] = useState<'dark' | 'light'>(() => {
@@ -318,7 +320,7 @@ export function App() {
     e.target.value = '';
   };
 
-  // Global keyboard shortcuts (Ctrl+S Save, Ctrl+O Open, Alt+N New File)
+  // Global keyboard shortcuts (Ctrl+S Save, Ctrl+O Open, Ctrl+Shift+I Photo->Code, Alt+N New File)
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
@@ -327,6 +329,9 @@ export function App() {
       } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'o') {
         e.preventDefault();
         fileInputRef.current?.click();
+      } else if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 'i') {
+        e.preventDefault();
+        setShowPhotoModal(true);
       } else if (e.altKey && e.key.toLowerCase() === 'n') {
         e.preventDefault();
         handleNewFile();
@@ -351,7 +356,7 @@ export function App() {
     } else {
       setUpdateStatus({
         state: 'up-to-date',
-        version: '1.6.3',
+        version: '1.7.0',
         message: 'Version Web : toujours à jour automatiquement au chargement.',
       });
     }
@@ -398,6 +403,7 @@ export function App() {
         onNewFile={handleNewFile}
         onSaveFile={handleSaveFile}
         onTriggerOpenFile={() => fileInputRef.current?.click()}
+        onOpenPhotoImport={() => setShowPhotoModal(true)}
         onCloseActiveTab={() => handleCloseFile(activeFile.id)}
         canCloseTab={files.length > 1}
         isRunning={isRunning}
@@ -455,6 +461,7 @@ export function App() {
             onRun={handleRunActive}
             onStop={handleStop}
             onFormat={handleFormatActive}
+            onOpenPhotoImport={() => setShowPhotoModal(true)}
             onClearConsole={handleClearConsole}
           />
         )}
@@ -482,7 +489,7 @@ export function App() {
       </main>
 
       <footer className="h-5 px-3 bg-[var(--bg-sidebar)] border-t border-[var(--border-soft)] flex items-center justify-between text-[10px] text-[var(--text-muted)] shrink-0 select-none">
-        <span className="font-mono opacity-80">AlgoStudio v1.6.3</span>
+        <span className="font-mono opacity-80">AlgoStudio v1.7.0</span>
         <a
           href="https://github.com/YassineM-Dev/algostudio"
           target="_blank"
@@ -492,6 +499,18 @@ export function App() {
           &copy; 2026 Developed by Yassine
         </a>
       </footer>
+
+      <PhotoToCodeModal
+        isOpen={showPhotoModal}
+        onClose={() => setShowPhotoModal(false)}
+        onReplaceActive={(extracted) => {
+          setActiveWorkspace('ide');
+          handleCodeChange(extracted);
+        }}
+        onOpenNewTab={(extracted, filename) => {
+          handleOpenInIde(extracted, filename, false);
+        }}
+      />
     </div>
   );
 }

@@ -2,7 +2,7 @@
 
 Application bureau Windows (`.exe`) pour les élèves du **Bac Informatique Tunisien** :
 - Exécution en temps réel du pseudocode (convention officielle tunisienne sans bloc `Variables`), **TDO** et **Trace** automatiques
-- Éditeur complet (multi-onglets, symboles `← ≠ ≤ ≥ @ À É`, conversion `Auto`, bouton activer/désactiver `Complétion`, **Mode Clair / Mode Sombre**)
+- Éditeur complet (multi-onglets, symboles `← ≠ ≤ ≥ @ À É`, conversion `Auto`, bouton activer/désactiver `Complétion`, **Photo → Code (OCR hors-ligne)**, **Mode Clair / Mode Sombre**)
 - **12 chapitres** du Guide Complet d'Algorithmique + PDF intégré
 - **27 modules standards** prêts à exécuter
 - **Tous les sujets Bac d'Algorithmique & Programmation (2008–2026)** : Théorique (Principale + Contrôle) & Pratique, Énoncés & Corrigés PDF directs vérifiés

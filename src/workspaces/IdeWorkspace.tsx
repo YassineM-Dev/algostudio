@@ -28,6 +28,7 @@ interface IdeWorkspaceProps {
   onRun: () => void;
   onStop: () => void;
   onFormat: () => void;
+  onOpenPhotoImport: () => void;
   onClearConsole: () => void;
 }
 
@@ -52,6 +53,7 @@ export const IdeWorkspace: React.FC<IdeWorkspaceProps> = ({
   onRun,
   onStop,
   onFormat,
+  onOpenPhotoImport,
   onClearConsole,
 }) => {
   const [splitOrientation, setSplitOrientation] = useState<'horizontal' | 'vertical'>('horizontal');
@@ -77,6 +79,7 @@ export const IdeWorkspace: React.FC<IdeWorkspaceProps> = ({
           onRun={onRun}
           onStop={onStop}
           onFormat={onFormat}
+          onOpenPhotoImport={onOpenPhotoImport}
           isRunning={isRunning}
           errorLine={errorLine}
           theme={theme}

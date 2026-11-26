@@ -1,7 +1,7 @@
 {
   "name": "algostudio",
   "private": true,
-  "version": "1.6.3",
+  "version": "1.7.0",
   "description": "AlgoStudio — IDE d'Algorithmique & Bac Informatique",
   "author": "Yassine",
   "type": "module",
@@ -84,6 +84,7 @@
     "electron": "^45.5.0",
     "electron-builder": "^26.18.0",
     "tailwindcss": "^4.1.8",
+    "tesseract.js": "^7.0.0",
     "typescript": "^5.8.3",
     "vite": "^6.3.5",
     "vitest": "^3.1.4"

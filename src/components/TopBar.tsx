@@ -19,6 +19,7 @@ import {
   Lock,
   Unlock,
   RefreshCw,
+  Camera,
 } from 'lucide-react';
 
 export type WorkspaceId = 'ide' | 'resumes' | 'modules' | 'bac';
@@ -31,6 +32,7 @@ interface TopBarProps {
   onNewFile: () => void;
   onSaveFile: () => void;
   onTriggerOpenFile: () => void;
+  onOpenPhotoImport: () => void;
   onCloseActiveTab: () => void;
   canCloseTab: boolean;
   isRunning: boolean;
@@ -63,6 +65,7 @@ export const TopBar: React.FC<TopBarProps> = ({
   onNewFile,
   onSaveFile,
   onTriggerOpenFile,
+  onOpenPhotoImport,
   onCloseActiveTab,
   canCloseTab,
   isRunning,
@@ -155,6 +158,21 @@ export const TopBar: React.FC<TopBarProps> = ({
                     Ouvrir (.algo)...
                   </span>
                   <span className="font-mono text-[10px] text-[var(--text-muted)]">Ctrl+O</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    onOpenPhotoImport();
+                    setOpenMenu(null);
+                  }}
+                  className="w-full flex items-center justify-between px-3 py-1.5 text-left text-[var(--text-primary)] hover:bg-[var(--bg-subtle)] cursor-pointer"
+                >
+                  <span className="flex items-center gap-2">
+                    <Camera className="w-3.5 h-3.5 text-[#E50914]" />
+                    Importer photo...
+                  </span>
+                  <span className="font-mono text-[10px] text-[var(--text-muted)]">Ctrl+Shift+I</span>
                 </button>
 
                 <button
