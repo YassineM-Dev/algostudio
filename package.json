@@ -1,7 +1,7 @@
 {
   "name": "algostudio",
   "private": true,
-  "version": "1.8.0",
+  "version": "1.8.1",
   "description": "AlgoStudio — IDE d'Algorithmique & Bac Informatique",
   "author": "Yassine",
   "type": "module",

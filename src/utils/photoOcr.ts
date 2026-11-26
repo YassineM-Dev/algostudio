@@ -168,7 +168,7 @@ export async function extractAlgoOfflineOcr(
     corePath,
     langPath,
     workerBlobURL: false,
-    gzip: true,
+    gzip: false,
     logger: (msg) => {
       if (msg.status === 'recognizing text') {
         const pct = Math.round(35 + (msg.progress || 0) * 60);
