@@ -42,57 +42,55 @@ export const ResumesWorkspace: React.FC<ResumesWorkspaceProps> = ({ onOpenInIde 
 
   return (
     <div className="h-full flex flex-col min-h-0 max-w-6xl mx-auto">
-      {/* Compact Filter Bar */}
-      <div className="shrink-0 pb-2.5 border-b border-[var(--border-main)] flex flex-col gap-2">
-        <div className="flex items-center justify-between gap-3">
-          <div className="flex items-center gap-1.5 overflow-x-auto pb-0.5 flex-1">
+      {/* Compact Responsive Filter Bar */}
+      <div className="shrink-0 pb-2.5 border-b border-[var(--border-main)] flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-0.5 flex-1 min-w-0">
+          <button
+            type="button"
+            onClick={() => setSelectedTopicId(null)}
+            className={`px-2.5 py-1.5 sm:py-1 rounded-md text-xs font-semibold shrink-0 cursor-pointer border ${
+              selectedTopicId === null
+                ? 'bg-[#E50914] border-[#E50914] text-white'
+                : 'bg-[var(--bg-surface)] border-[var(--border-main)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+            }`}
+          >
+            Tout ({CHEAT_SHEETS.length})
+          </button>
+          {CHEAT_SHEETS.map((t) => (
             <button
+              key={t.id}
               type="button"
-              onClick={() => setSelectedTopicId(null)}
-              className={`px-2.5 py-1 rounded-md text-xs font-semibold shrink-0 cursor-pointer border ${
-                selectedTopicId === null
-                  ? 'bg-[#E50914] border-[#E50914] text-white'
+              onClick={() => setSelectedTopicId(selectedTopicId === t.id ? null : t.id)}
+              className={`px-2.5 py-1.5 sm:py-1 rounded-md text-xs font-medium shrink-0 cursor-pointer border ${
+                selectedTopicId === t.id
+                  ? 'bg-[#E50914]/12 border-[#E50914] text-[#DC0915] dark:text-[#FF4D57] font-semibold'
                   : 'bg-[var(--bg-surface)] border-[var(--border-main)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
               }`}
             >
-              Tout ({CHEAT_SHEETS.length})
+              <span className="font-mono text-[10px] opacity-60 mr-1">{t.number}</span>
+              {t.title}
             </button>
-            {CHEAT_SHEETS.map((t) => (
-              <button
-                key={t.id}
-                type="button"
-                onClick={() => setSelectedTopicId(selectedTopicId === t.id ? null : t.id)}
-                className={`px-2.5 py-1 rounded-md text-xs font-medium shrink-0 cursor-pointer border ${
-                  selectedTopicId === t.id
-                    ? 'bg-[#E50914]/12 border-[#E50914] text-[#DC0915] dark:text-[#FF4D57] font-semibold'
-                    : 'bg-[var(--bg-surface)] border-[var(--border-main)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
-                }`}
-              >
-                <span className="font-mono text-[10px] opacity-60 mr-1">{t.number}</span>
-                {t.title}
-              </button>
-            ))}
-          </div>
+          ))}
+        </div>
 
-          <div className="relative w-52 sm:w-64 shrink-0">
-            <Search className="w-3.5 h-3.5 text-[var(--text-muted)] absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-            <input
-              type="text"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Rechercher..."
-              className="w-full pl-8 pr-7 py-1.5 rounded-md bg-[var(--bg-surface)] border border-[var(--border-main)] focus:border-[#E50914] text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none"
-            />
-            {query && (
-              <button
-                type="button"
-                onClick={() => setQuery('')}
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer"
-              >
-                <X className="w-3.5 h-3.5" />
-              </button>
-            )}
-          </div>
+        <div className="relative w-full sm:w-60 shrink-0">
+          <Search className="w-3.5 h-3.5 text-[var(--text-muted)] absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+          <input
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Rechercher dans les résumés..."
+            className="w-full pl-8 pr-7 py-1.5 rounded-md bg-[var(--bg-surface)] border border-[var(--border-main)] focus:border-[#E50914] text-base sm:text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none"
+          />
+          {query && (
+            <button
+              type="button"
+              onClick={() => setQuery('')}
+              className="absolute right-2 top-1/2 -translate-y-1/2 text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          )}
         </div>
       </div>
 

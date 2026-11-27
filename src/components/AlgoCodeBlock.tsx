@@ -173,7 +173,7 @@ export const AlgoCodeBlock: React.FC<AlgoCodeBlockProps> = ({
           type="button"
           onClick={handleCopy}
           title="Copier le code"
-          className="absolute top-2 right-2 z-10 flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium bg-[var(--bg-surface)]/95 hover:bg-[var(--bg-subtle)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] border border-[var(--border-main)] transition-all opacity-0 group-hover:opacity-100 focus:opacity-100 cursor-pointer shadow-xs"
+          className="absolute top-2 right-2 z-10 flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium bg-[var(--bg-surface)]/95 hover:bg-[var(--bg-subtle)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] border border-[var(--border-main)] transition-all opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus:opacity-100 cursor-pointer shadow-xs"
         >
           {copied ? (
             <>

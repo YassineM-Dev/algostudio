@@ -311,10 +311,10 @@ export const TopBar: React.FC<TopBarProps> = ({
           </div>
         </div>
 
-        <div className="h-4 w-px bg-[var(--border-main)] hidden sm:block" />
+        <div className="h-4 w-px bg-[var(--border-main)] hidden md:block" />
 
-        {/* Workspace Switch Tabs */}
-        <nav className="flex items-center gap-0.5 bg-[var(--bg-elevated)] p-0.5 rounded-lg border border-[var(--border-soft)]">
+        {/* Desktop Workspace Switch Tabs (hidden on phones — moved to native MobileBottomNav) */}
+        <nav className="hidden md:flex items-center gap-0.5 bg-[var(--bg-elevated)] p-0.5 rounded-lg border border-[var(--border-soft)]">
           {TABS.map((tab) => {
             const Icon = tab.icon;
             const active = activeWorkspace === tab.id;
@@ -389,5 +389,55 @@ export const TopBar: React.FC<TopBarProps> = ({
         </button>
       </div>
     </header>
+  );
+};
+
+interface MobileBottomNavProps {
+  activeWorkspace: WorkspaceId;
+  onSelectWorkspace: (id: WorkspaceId) => void;
+  resourcesUnlocked: boolean;
+}
+
+export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
+  activeWorkspace,
+  onSelectWorkspace,
+  resourcesUnlocked,
+}) => {
+  return (
+    <nav
+      aria-label="Navigation mobile"
+      className="md:hidden grid grid-cols-4 bg-[var(--bg-sidebar)] border-t border-[var(--border-main)] shrink-0 select-none"
+    >
+      {TABS.map((tab) => {
+        const Icon = tab.icon;
+        const active = activeWorkspace === tab.id;
+        const isLockedTab =
+          !resourcesUnlocked &&
+          (tab.id === 'resumes' || tab.id === 'modules' || tab.id === 'bac');
+        return (
+          <button
+            key={tab.id}
+            type="button"
+            onClick={() => onSelectWorkspace(tab.id)}
+            className={`relative flex flex-col items-center justify-center gap-0.5 py-2 px-1 text-[10px] font-semibold transition-colors cursor-pointer ${
+              active
+                ? 'text-[#E50914]'
+                : 'text-[var(--text-muted)] active:text-[var(--text-primary)]'
+            }`}
+          >
+            {active && (
+              <span className="absolute top-0 left-3 right-3 h-[2px] rounded-b bg-[#E50914]" />
+            )}
+            <span className="relative">
+              <Icon className="w-4 h-4" />
+              {isLockedTab && (
+                <Lock className="w-2.5 h-2.5 absolute -top-1 -right-2 opacity-75" />
+              )}
+            </span>
+            <span className="truncate max-w-full">{tab.label}</span>
+          </button>
+        );
+      })}
+    </nav>
   );
 };

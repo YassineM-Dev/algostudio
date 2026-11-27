@@ -135,6 +135,15 @@ export const CodeEditorPanel: React.FC<CodeEditorPanelProps> = ({
   const [showShortcuts, setShowShortcuts] = useState(false);
   const [renamingId, setRenamingId] = useState<string | null>(null);
   const [renameValue, setRenameValue] = useState('');
+  const [isMobileViewport, setIsMobileViewport] = useState<boolean>(() =>
+    typeof window !== 'undefined' ? window.innerWidth < 640 : false
+  );
+
+  useEffect(() => {
+    const onResize = () => setIsMobileViewport(window.innerWidth < 640);
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
 
   useEffect(() => {
     try {
@@ -274,7 +283,7 @@ export const CodeEditorPanel: React.FC<CodeEditorPanelProps> = ({
   return (
     <div className="flex flex-col h-full bg-[var(--bg-surface)] border border-[var(--border-main)] rounded-lg overflow-hidden">
       {/* Row 1: Multi-File Tabs Strip (Thonny-style) */}
-      <div className="flex items-center bg-[var(--bg-elevated)] border-b border-[var(--border-main)] overflow-x-auto select-none">
+      <div className="flex items-center bg-[var(--bg-elevated)] border-b border-[var(--border-main)] overflow-x-auto no-scrollbar select-none">
         <div className="flex items-center min-w-0">
           {files.map((tab) => {
             const active = tab.id === activeFileId;
@@ -342,14 +351,14 @@ export const CodeEditorPanel: React.FC<CodeEditorPanelProps> = ({
         </div>
       </div>
 
-      {/* Row 2: Compact Run + Non-Keyboard Symbols Strip */}
-      <div className="flex flex-wrap items-center justify-between gap-2 px-2.5 py-1.5 bg-[var(--bg-surface)] border-b border-[var(--border-soft)]">
+      {/* Row 2: Compact Run + Photo + Toggles */}
+      <div className="flex flex-wrap items-center justify-between gap-1.5 sm:gap-2 px-2 sm:px-2.5 py-1.5 bg-[var(--bg-surface)] border-b border-[var(--border-soft)]">
         <div className="flex items-center gap-1.5">
           {!isRunning ? (
             <button
               type="button"
               onClick={onRun}
-              className="flex items-center gap-1.5 px-3 py-1 rounded-md bg-[#E50914] hover:bg-[#FF2A2A] text-white text-xs font-semibold transition-colors cursor-pointer"
+              className="flex items-center gap-1.5 px-3 py-1.5 sm:py-1 rounded-md bg-[#E50914] hover:bg-[#FF2A2A] text-white text-xs font-semibold transition-colors cursor-pointer"
               title="Exécuter (Ctrl+Entrée)"
             >
               <Play className="w-3.5 h-3.5 fill-current" />
@@ -359,7 +368,7 @@ export const CodeEditorPanel: React.FC<CodeEditorPanelProps> = ({
             <button
               type="button"
               onClick={onStop}
-              className="flex items-center gap-1.5 px-3 py-1 rounded-md bg-[#E50914]/15 border border-[#E50914] text-[#E50914] text-xs font-semibold animate-pulse-crimson cursor-pointer"
+              className="flex items-center gap-1.5 px-3 py-1.5 sm:py-1 rounded-md bg-[#E50914]/15 border border-[#E50914] text-[#E50914] text-xs font-semibold animate-pulse-crimson cursor-pointer"
               title="Arrêter"
             >
               <Square className="w-3.5 h-3.5 fill-current" />
@@ -370,7 +379,7 @@ export const CodeEditorPanel: React.FC<CodeEditorPanelProps> = ({
           <button
             type="button"
             onClick={onOpenPhotoImport}
-            className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[var(--bg-elevated)] hover:bg-[var(--bg-subtle)] border border-[var(--border-main)] hover:border-[#E50914]/50 text-xs font-medium text-[var(--text-primary)] transition-colors cursor-pointer"
+            className="flex items-center gap-1.5 px-2.5 py-1.5 sm:py-1 rounded-md bg-[var(--bg-elevated)] hover:bg-[var(--bg-subtle)] border border-[var(--border-main)] hover:border-[#E50914]/50 text-xs font-medium text-[var(--text-primary)] transition-colors cursor-pointer"
             title="Importer le code depuis la caméra ou une photo (Ctrl+Shift+I)"
           >
             <Camera className="w-3.5 h-3.5 text-[#E50914]" />
@@ -379,30 +388,33 @@ export const CodeEditorPanel: React.FC<CodeEditorPanelProps> = ({
         </div>
 
         <div className="flex items-center gap-1 shrink-0">
-          {NON_KEYBOARD_SYMBOLS.map((item) => (
-            <button
-              key={item.symbol}
-              type="button"
-              onClick={() => insertAtCursor(item.insert)}
-              title={item.title}
-              className="px-1.5 py-0.5 rounded bg-[var(--bg-elevated)] hover:bg-[#E50914]/15 border border-[var(--border-main)] hover:border-[#E50914]/40 font-mono text-xs font-bold text-[#DC0915] dark:text-[#FF4D57] transition-colors cursor-pointer"
-            >
-              {item.symbol}
-            </button>
-          ))}
+          {/* Desktop inline symbols (moved to dedicated finger-friendly touch strip on mobile) */}
+          <div className="hidden sm:flex items-center gap-1">
+            {NON_KEYBOARD_SYMBOLS.map((item) => (
+              <button
+                key={item.symbol}
+                type="button"
+                onClick={() => insertAtCursor(item.insert)}
+                title={item.title}
+                className="px-1.5 py-0.5 rounded bg-[var(--bg-elevated)] hover:bg-[#E50914]/15 border border-[var(--border-main)] hover:border-[#E50914]/40 font-mono text-xs font-bold text-[#DC0915] dark:text-[#FF4D57] transition-colors cursor-pointer"
+              >
+                {item.symbol}
+              </button>
+            ))}
+          </div>
 
           <button
             type="button"
             onClick={() => setAutoSymbols((v) => !v)}
             title="Conversion auto : <- → ←, <= → ≤, >= → ≥, != → ≠"
-            className={`ml-1 inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] font-semibold border transition-colors cursor-pointer ${
+            className={`sm:ml-1 inline-flex items-center gap-1 px-2 sm:px-1.5 py-1 sm:py-0.5 rounded text-[11px] font-semibold border transition-colors cursor-pointer ${
               autoSymbols
                 ? 'bg-emerald-500/12 border-emerald-500/35 text-emerald-700 dark:text-emerald-400'
                 : 'bg-[var(--bg-elevated)] border-[var(--border-main)] text-[var(--text-muted)]'
             }`}
           >
             <Zap className="w-3 h-3" />
-            <span className="hidden sm:inline">Auto</span>
+            <span>Auto</span>
           </button>
 
           <button
@@ -414,7 +426,7 @@ export const CodeEditorPanel: React.FC<CodeEditorPanelProps> = ({
                 : 'Auto-complétion désactivée (cliquer pour activer)'
             }
             aria-pressed={autoComplete}
-            className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] font-semibold border transition-colors cursor-pointer ${
+            className={`inline-flex items-center gap-1 px-2 sm:px-1.5 py-1 sm:py-0.5 rounded text-[11px] font-semibold border transition-colors cursor-pointer ${
               autoComplete
                 ? 'bg-emerald-500/12 border-emerald-500/35 text-emerald-700 dark:text-emerald-400'
                 : 'bg-[var(--bg-elevated)] border-[var(--border-main)] text-[var(--text-muted)]'
@@ -428,7 +440,7 @@ export const CodeEditorPanel: React.FC<CodeEditorPanelProps> = ({
             type="button"
             onClick={() => setShowShortcuts((s) => !s)}
             title="Raccourcis clavier"
-            className={`p-1 rounded border transition-colors cursor-pointer ${
+            className={`hidden sm:inline-flex p-1 rounded border transition-colors cursor-pointer ${
               showShortcuts
                 ? 'bg-[#E50914] border-[#E50914] text-white'
                 : 'bg-[var(--bg-elevated)] hover:bg-[var(--bg-subtle)] border-[var(--border-main)] text-[var(--text-secondary)]'
@@ -437,6 +449,21 @@ export const CodeEditorPanel: React.FC<CodeEditorPanelProps> = ({
             <Keyboard className="w-3.5 h-3.5" />
           </button>
         </div>
+      </div>
+
+      {/* Mobile Touch-Friendly Symbol Strip (< sm) */}
+      <div className="sm:hidden flex items-center gap-1.5 px-2 py-1.5 bg-[var(--bg-elevated)] border-b border-[var(--border-soft)] overflow-x-auto no-scrollbar select-none">
+        {NON_KEYBOARD_SYMBOLS.map((item) => (
+          <button
+            key={item.symbol}
+            type="button"
+            onClick={() => insertAtCursor(item.insert)}
+            title={item.title}
+            className="flex-1 min-w-[40px] h-8 rounded-md bg-[var(--bg-surface)] active:bg-[#E50914]/20 border border-[var(--border-main)] font-mono text-sm font-bold text-[#DC0915] dark:text-[#FF4D57] flex items-center justify-center cursor-pointer shrink-0"
+          >
+            {item.symbol}
+          </button>
+        ))}
       </div>
 
       {/* Collapsible Compact Shortcuts Strip */}
@@ -486,17 +513,19 @@ export const CodeEditorPanel: React.FC<CodeEditorPanelProps> = ({
           onMount={handleMount}
           options={{
             fontFamily: "'JetBrains Mono', monospace",
-            fontSize: 14,
-            lineHeight: 22,
-            fontLigatures: true,
+            fontSize: isMobileViewport ? 13 : 14,
+            lineHeight: isMobileViewport ? 21 : 22,
+            fontLigatures: !isMobileViewport,
+            wordWrap: isMobileViewport ? 'on' : 'off',
             minimap: { enabled: false },
             scrollBeyondLastLine: false,
             automaticLayout: true,
             tabSize: 4,
             insertSpaces: true,
-            glyphMargin: true,
-            lineNumbersMinChars: 3,
-            padding: { top: 12, bottom: 12 },
+            glyphMargin: !isMobileViewport,
+            folding: !isMobileViewport,
+            lineNumbersMinChars: isMobileViewport ? 2 : 3,
+            padding: { top: isMobileViewport ? 8 : 12, bottom: 12 },
             smoothScrolling: true,
             cursorBlinking: 'smooth',
             renderLineHighlight: 'all',

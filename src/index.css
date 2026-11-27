@@ -54,6 +54,7 @@
     color: var(--text-primary);
     font-family: var(--font-sans);
     overscroll-behavior: none;
+    -webkit-tap-highlight-color: transparent;
   }
 }
 
@@ -63,6 +64,15 @@
 
 .safe-bottom {
   padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 /* Custom themed scrollbars */

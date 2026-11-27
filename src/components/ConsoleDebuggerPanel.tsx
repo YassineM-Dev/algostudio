@@ -262,12 +262,12 @@ export const ConsoleDebuggerPanel: React.FC<ConsoleDebuggerPanelProps> = ({
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
                   placeholder={`Valeur de ${pendingInput.targetName}...`}
-                  className="flex-1 min-w-0 bg-[var(--bg-code)] border border-[var(--border-main)] focus:border-[#E50914] rounded-md px-2.5 py-1 text-sm font-mono text-[var(--text-primary)] focus:outline-none"
+                  className="flex-1 min-w-0 bg-[var(--bg-code)] border border-[var(--border-main)] focus:border-[#E50914] rounded-md px-2.5 py-1.5 sm:py-1 text-base sm:text-sm font-mono text-[var(--text-primary)] focus:outline-none"
                   autoFocus
                 />
                 <button
                   type="submit"
-                  className="flex items-center gap-1 px-2.5 py-1 rounded-md bg-[#E50914] hover:bg-[#FF2A2A] text-white font-sans text-xs font-semibold cursor-pointer shrink-0"
+                  className="flex items-center gap-1 px-3 sm:px-2.5 py-1.5 sm:py-1 rounded-md bg-[#E50914] hover:bg-[#FF2A2A] text-white font-sans text-xs font-semibold cursor-pointer shrink-0"
                 >
                   <span>OK</span>
                   <CornerDownLeft className="w-3 h-3" />

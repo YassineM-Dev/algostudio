@@ -259,12 +259,12 @@ export const PhotoToCodeModal: React.FC<PhotoToCodeModalProps> = ({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-[2px] p-2 sm:p-3"
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-[2px] p-0 sm:p-3"
       onMouseDown={(e) => {
         if (e.target === e.currentTarget && !isProcessing) onClose();
       }}
     >
-      <div className="w-full max-w-4xl max-h-[92dvh] flex flex-col rounded-xl bg-[var(--bg-surface)] border border-[var(--border-main)] shadow-2xl overflow-hidden">
+      <div className="w-full max-w-4xl max-h-[94dvh] sm:max-h-[90dvh] flex flex-col rounded-t-2xl sm:rounded-xl bg-[var(--bg-surface)] border border-[var(--border-main)] shadow-2xl overflow-hidden safe-bottom">
         {/* Header */}
         <div className="px-4 py-2.5 bg-[var(--bg-elevated)] border-b border-[var(--border-main)] flex items-center justify-between gap-2 shrink-0">
           <div className="flex items-center gap-2 min-w-0">

@@ -47,7 +47,7 @@ export const LockGate: React.FC<LockGateProps> = ({ sectionName, onUnlock }) => 
               placeholder="Mot de passe..."
               autoFocus
               aria-label="Mot de passe"
-              className={`w-full pl-3.5 pr-9 py-2 rounded-lg bg-[var(--bg-code)] border text-sm font-mono text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none transition-colors ${
+              className={`w-full pl-3.5 pr-9 py-2.5 sm:py-2 rounded-lg bg-[var(--bg-code)] border text-base sm:text-sm font-mono text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none transition-colors ${
                 error
                   ? 'border-[#E50914]'
                   : 'border-[var(--border-main)] focus:border-[#E50914]'
